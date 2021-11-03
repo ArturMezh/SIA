@@ -356,7 +356,8 @@ names(dmeanssum)[c(1:11)]<-c( "Case",
 dmeanssum_ALL <- data.frame(cbind(dmeanssum_ALL, dmeanssum))
 CRC_TIL <- dmeanssum_ALL[,c(-12, -23)]
 
-
+setwd("/Volumes/Samsung_X5/Cohorts/CRC/Paper current SIA/V 2.0/codes for GitHub/datasets/CRC/")
+write.table(CRC_TIL, file ="CRC_TIL.txt", append = FALSE, sep="\t", row.names = F, col.names = TRUE)
 
 
 
@@ -697,6 +698,8 @@ names(dmeanssum)[c(1:9)]<-c( "Case_IM",
 dmeanssum_ALL <- data.frame(cbind(dmeanssum_ALL, dmeanssum))
 
 CRC_NK <- dmeanssum_ALL[,c(-10, -19)]
+setwd("/Volumes/Samsung_X5/Cohorts/CRC/Paper current SIA/V 2.0/codes for GitHub/datasets/CRC/")
+write.table(CRC_NK, file ="CRC_NK.txt", append = FALSE, sep="\t", row.names = F, col.names = TRUE)
 
 
 
@@ -706,10 +709,11 @@ CRC_NK <- dmeanssum_ALL[,c(-10, -19)]
                                     ##################################################
 library(dplyr)
 
-
+setwd("/Volumes/Samsung_X5/Cohorts/CRC/Paper current SIA/V 2.0/codes for GitHub/datasets/CRC/")
 dat <- NULL
 dat <- read.xlsx2("CRC clinical data.xlsx", sheetIndex = 1)
-
+CRC_NK <- read.table("CRC_NK.txt", sep="\t", header=T, fill = T)
+CRC_TIL <- read.table("CRC_TIL.txt", sep="\t", header=T, fill = T)
 ##### match 
 
 df <- full_join(CRC_TIL, CRC_NK,by="Case")
@@ -720,7 +724,7 @@ data <- left_join(dat, df,by="Case", all = F)
 
 ######  make immunoscore-like metric
 dat2 <- data
-
+colnames(dat2)
 for(i in names(dat2[,c(215,225,239,247)] )){
   x  <-  as.data.frame(dat2[!is.na(dat2[i]),])
   x[i] <- (rank(x[[i]]) - 1) / (length(x[[i]])-1)
@@ -729,7 +733,7 @@ for(i in names(dat2[,c(215,225,239,247)] )){
 }
 
 dat2$ISLike <- rowMeans(dat2[,c("CD8_CT.y","CD8_IM.y","CD3_CT.y","CD3_IM.y")], na.rm=TRUE)
-
+head(dat2)
 dat2$ISLike_temp <-  dat2$ISLike
 dat2$ISLike_temp <-  ifelse((dat2$ISLike>0.25), 2, 1)
 dat2$ISLike <-  ifelse((dat2$ISLike>0.70), 3, dat2$ISLike_temp)
